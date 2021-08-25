@@ -1,4 +1,4 @@
-<include a CircleCI status badge, here>
+[![CircleCI](https://circleci.com/gh/au12113/udapredict.svg?style=svg)](https://circleci.com/gh/au12113/udapredict)
 
 ## Project Overview
 
@@ -31,6 +31,8 @@ You can find a detailed [project rubric, here](https://review.udacity.com/#!/rub
 ### Running `app.py`
 
 1. Standalone:  `python app.py`
+   In case of don't have permission to use port 80: `sudo python app.py`
+   Or change port in line 72
 2. Run in Docker:  `./run_docker.sh`
 3. Run in Kubernetes:  `./run_kubernetes.sh`
 
@@ -40,3 +42,26 @@ You can find a detailed [project rubric, here](https://review.udacity.com/#!/rub
 * Setup and Configure Kubernetes locally
 * Create Flask app in Container
 * Run via kubectl
+
+### Project structure
+```
+.
+|-- app.py
+|-- Makefile
+|-- requirements.txt
+|-- Dockerfile
+|-- run_docker.sh
+|-- make_prediction.sh
+|-- run_kubernetes.sh
+|-- upload_docker.sh
+|-- .circleci
+|   |-- config.yml
+|
+|-- model_data
+|   |-- boston_housing_prediction.joblib
+|   |-- housing.csv
+|
+|-- output_txt_files: directory to collect log
+    |-- docker_out.txt
+    |-- kubernetes_out.txt
+```
