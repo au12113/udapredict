@@ -26,39 +26,95 @@ You can find a detailed [project rubric, here](https://review.udacity.com/#!/rub
 ## Setup the Environment
 
 * Create a virtualenv and activate it
+  * Create a virtual environment: `python -m venv ~/<environment_name>`
+  * Activate the virtual environment: `source ~/<environment_name>/activate`
 * Run `make install` to install the necessary dependencies
+* Run `make lint` to linting app.py with pylint and Dockerfile with hadolint
+* [ Recommend ] Windows users install Chocolatey following the instructions, [on Chocolatey's page](https://chocolatey.org/install)
 
 ### Running `app.py`
 
 1. Standalone:  `python app.py`
-   In case of don't have permission to use port 80: `sudo python app.py`
-   Or change port in line 72
-2. Run in Docker:  `./run_docker.sh`
-3. Run in Kubernetes:  `./run_kubernetes.sh`
+   In case of error when running on port 80: `sudo python app.py`
+2. Build image and run in Docker:  `./run_docker.sh`
+3. Run in Kubernetes:  
+   1. Upload recent image: `./upload_docker.sh`
+   2. Get latest version and run in Kubernetes: `./run_kubernetes.sh`
 
 ### Kubernetes Steps
 
 * Setup and Configure Docker locally
+  * Linux :
+    * Get Docker repository
+    ```
+        $ sudo apt-get update
+        $ sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release
+        $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+        $ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    ```
+    * Install Docker Engine
+    ```
+        $ sudo apt-get update
+        $ sudo apt-get install docker-ce docker-ce-cli containerd.io
+    ```
+  * Windows : 
+    * [Docker Desktop](https://www.docker.com/products/docker-desktop)
 * Setup and Configure Kubernetes locally
-* Create Flask app in Container
+  * Install kubectl 
+    * Linux
+      * Get repository and install 
+      ```
+        $ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        $ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      ```
+      * Test to ensure the version of kubectl 
+      ```
+        $ kubectl version --client
+      ```
+    * Windows
+      ```
+      choco install kubernetes-cli
+      ```
+
+  * Install minikube
+    * Linux
+      ```
+      $ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      $ sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      ```
+    * Windows
+        ```choco install minikube```
+* Build Flask app to Docker image and upload to Docker Hub
+  ```
+  $ docker build --tag udapredict .
+  $ ./upload_docker.sh
+  ```
 * Run via kubectl
+  ```
+  $ minikube start
+  $ ./run_kubernetes.sh
+  ```
+  ```
+  (run prediction on separate terminal)
+  $ ./make_prediction.sh
+  ```
 
 ### Project structure
 ```
 .
 |-- app.py
-|-- Makefile
-|-- requirements.txt
+|-- Makefile 
+|-- requirements.txt : required python library that apply in Makefile
 |-- Dockerfile
-|-- run_docker.sh
-|-- make_prediction.sh
-|-- run_kubernetes.sh
-|-- upload_docker.sh
+|-- run_docker.sh 
+|-- make_prediction.sh : script to request prediction 
+|-- run_kubernetes.sh : change docker path to your own
+|-- upload_docker.sh : change docker path and authentication to your own 
 |-- .circleci
 |   |-- config.yml
 |
 |-- model_data
-|   |-- boston_housing_prediction.joblib
+|   |-- boston_housing_prediction.joblib : pretrained model
 |   |-- housing.csv
 |
 |-- output_txt_files: directory to collect log
